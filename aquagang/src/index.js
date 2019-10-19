@@ -1,12 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "./style.css";
+import SideBar from "./sidebar";
+import MapContainer from './MapContainer.js';
+import { Map, GoogleApiWrapper } from 'google-maps-react';
 
-ReactDOM.render(<App />, document.getElementById('root'));
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+function App() {
+  return (
+    <div id="App">
+        <SideBar className="sidebar" pageWrapId={"page-wrap"} outerContainerId={"App"} />
+
+      <div id="page-wrap">
+        <MapContainer />
+      </div>
+    </div>
+  );
+}
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
+
