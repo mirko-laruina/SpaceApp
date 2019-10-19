@@ -4,7 +4,7 @@ import { slide as Menu } from "react-burger-menu";
 export default props => {
   return (
     // Pass on our props
-    <Menu right="true" {...props}>
+    <Menu right={true} {...props}>
       <a className="menu-item" href="/">
         Home
       </a>
