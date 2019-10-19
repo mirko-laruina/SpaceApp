@@ -12,26 +12,25 @@ class MapContainer extends Component {
     super();
     
     this.addPoint = this.addPoint.bind(this);
-    this.updateMap = this.updateMap.bind(this);
 
     this.state = {
       costa: [
-          {lat: -43.416667, lng:  11},
           {lat:  43.416667, lng:  11},
-          {lat: -43.416667, lng: -11} 
+          {lat:  43.416667, lng:  11.5},
+          {lat:  43, lng:  11.5} 
           ],
     }
   }
-
-    updateMap(){
-        this.addPoint({lat: 43, lng:  11.416667});
+    componentDidMount(){
+      this.addPoint({lat: 42, lng: 11});
     }
 
 //Aggiunge un punto all'array costa in modo tale che sia messo tra i 2 punti piu vicini (Prototipo)
     addPoint(newPoint){
         let costaQ = []
         for(let i=0; i<this.state.costa.length; i++){
-            let dist = this.state.costa[i].lat^2 + this.state.costa[i].lng^2; 
+            let dist = Math.pow(this.state.costa[i].lat, 2) + Math.pow(this.state.costa[i].lng, 2); 
+            console.log(dist);
             costaQ.push(dist);
         }
         
@@ -41,19 +40,16 @@ class MapContainer extends Component {
         }
 
         //Scegli l'indice di inserimento
-        let index = Math.min(distSum);
+        let index = (Math.min(...distSum) - 1) % this.state.costa.length;
         let newCosta = this.state.costa;
         newCosta.splice(index, 0, newPoint);
         this.setState({
           costa: newCosta,
         })
-        console.log(newCosta);
+        console.log(distSum);
     }
 
     render() {
-
-        setTimeout(this.updateMap, 2000);
-
         return (
             <Map id="googleMap"
               google={this.props.google}
