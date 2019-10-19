@@ -21,7 +21,7 @@ function myMap() {
         fillOpacity:2
     });
 
-    setTimeout(updateMap, 2 000);
+    setTimeout(updateMap, 2000);
 
     let map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
 
