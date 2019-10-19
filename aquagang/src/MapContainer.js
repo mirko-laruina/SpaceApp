@@ -1,74 +1,86 @@
 import React, { Component } from "react";
-import { Map, GoogleApiWrapper, Polygon } from 'google-maps-react';
+import { Map, GoogleApiWrapper, HeatMap } from 'google-maps-react';
+import myData from './altitudine.json';
+import {Button} from 'react-bootstrap'
 
 const mapStyles = {
   width: '100%',
   height: '100%',
 };
 
+var newData
+
 class MapContainer extends Component {
 
   constructor(){
     super();
-    
-    this.addPoint = this.addPoint.bind(this);
+
+    newData = this.updateData(3)
 
     this.state = {
-      costa: [
-          {lat:  43.416667, lng:  11},
-          {lat:  43.416667, lng:  11.5},
-          {lat:  43, lng:  11.5} 
-          ],
+      gradient: [
+        'rgba(170, 218, 255, 0)',
+        'rgba(170, 218, 255, 0)',
+        'rgba(170, 218, 255, 0)',
+        'rgba(170, 218, 255, 0)',
+        'rgba(170, 218, 255, 0)',
+        'rgba(170, 218, 255, 1)',
+        'rgba(170, 218, 255, 1)',
+        'rgba(170, 218, 255, 1)',
+        'rgba(170, 218, 255, 1)',
+        'rgba(170, 218, 255, 1)',
+        'rgba(170, 218, 255, 1)',
+      ],
+      data: newData,
+      treshold: 1
     }
+
+    this.updateData = this.updateData.bind(this)
   }
-    componentDidMount(){
-      this.addPoint({lat: 42, lng: 11});
-    }
 
-//Aggiunge un punto all'array costa in modo tale che sia messo tra i 2 punti piu vicini (Prototipo)
-    addPoint(newPoint){
-        let costaQ = []
-        for(let i=0; i<this.state.costa.length; i++){
-            let dist = Math.pow(this.state.costa[i].lat, 2) + Math.pow(this.state.costa[i].lng, 2); 
-            console.log(dist);
-            costaQ.push(dist);
-        }
-        
-        let distSum = [];
-        for(let i=0; i<costaQ.length; i++){
-            distSum.push(costaQ[i] + costaQ[(i+1)%costaQ.length]);
-        }
-
-        //Scegli l'indice di inserimento
-        let index = (Math.min(...distSum) - 1) % this.state.costa.length;
-        let newCosta = this.state.costa;
-        newCosta.splice(index, 0, newPoint);
-        this.setState({
-          costa: newCosta,
-        })
-        console.log(distSum);
-    }
-
-    render() {
-        return (
-            <Map id="googleMap"
-              google={this.props.google}
-              zoom={8}
-              style={mapStyles}
-              initialCenter={{ lat: 43.416667, lng: 11}}>
-              <Polygon
-                paths={this.state.costa}
-                strokeColor="#000000"
-                strokeOpacity={1}
-                strokeWeight={2}
-                fillColor="#aadaff"
-                fillOpacity={2} >
-              </Polygon>
-            </Map>
-        );
+  updateData(threshold){
+    var newData = myData;
+    newData.forEach(element => {
+      if(element.height == 0){
+        element.weight = 0;
+      } else if(element.height > threshold){
+        element.weight = 0;
+      } else {
+        element.weight = (100-element.height);
       }
+    });
+
+    return newData
+  }
+
+  componentDidMount(){
+    setTimeout(() => {
+      this.updateData(1000);
+    }, 5000);
+  }
+
+  render() {
+    return (
+        <Map id="googleMap"
+          google={this.props.google}
+          zoom={8}
+          style={mapStyles}
+          initialCenter={{ lat: 43.416667, lng: 11}}>
+          <HeatMap
+            positions ={this.state.data}
+            gradient={this.state.gradient}
+            opacity={1}
+            dissipating={false}
+            radius={0.07}
+            opacity={0.7}
+          >
+          </HeatMap>
+        </Map>
+    );
+  }
 }
 
 export default GoogleApiWrapper({
-  apiKey: 'AIzaSyD74jewz0A3giZ42WFsKFPfr5afNVbyDnM'
+  apiKey: 'AIzaSyD74jewz0A3giZ42WFsKFPfr5afNVbyDnM',
+  libraries: ["visualization"]
 })(MapContainer);
