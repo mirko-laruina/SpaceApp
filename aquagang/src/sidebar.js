@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import { slide as Menu } from "react-burger-menu";
+import './sidebar.css';
 import Slider from '@material-ui/core/Slider';
 import Cookies from 'universal-cookie';
 import Typography from '@material-ui/core/Typography';

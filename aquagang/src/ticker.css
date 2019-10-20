@@ -1,3 +1,13 @@
-.scorre *{
-    margin-left: 100px;
+.scorre{
+    
+   opacity: 70%;
+   
 }
+
+.scorre *{
+    padding-left: 100px;
+    width: 700px;
+    margin: 0%;
+ }
+
+ 
