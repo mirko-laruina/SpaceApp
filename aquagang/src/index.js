@@ -12,7 +12,8 @@ import { Map, GoogleApiWrapper } from 'google-maps-react';
 
 function App() {
 
-  var shuffle = require('shuffle-array'), citta = ['Pisa', 'Siena', 'Livorno', 'Viareggio'];
+  var shuffle = require('shuffle-array');
+  var citta = ['Pisa', 'Siena', 'Livorno', 'Viareggio'];
 
   return (
     <div id="App">

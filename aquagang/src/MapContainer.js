@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Map, GoogleApiWrapper, HeatMap, Polygon } from 'google-maps-react';
+import { Map, GoogleApiWrapper, HeatMap, Polygon, Polyline } from 'google-maps-react';
 import myData from './altitudine.json';
 import Cookies from 'universal-cookie'; 
-import confiniToscana from "./toscanaConfini2.json";
+import confiniToscana from "./toscanaConfini.json";
 
 const cookies = new Cookies()
 
@@ -138,8 +138,23 @@ class MapContainer extends Component {
     }
     
     setTimeout(()=>{
-      cookies.set("water", 10); console.log("adlknlanfa");
+      cookies.set("water", 1); console.log("adlknlanfa");
     }, 100)
+  }
+
+  createMarkBorders = () => {
+    let markBorders = [];
+    confiniToscana.forEach((cT)=>{
+      markBorders.push(
+        <Polyline 
+            path = {cT}
+            strokeColor = "#777"
+            strokeOpacity = {0.8}
+            strokeWeight = {2}
+          />
+      );
+    });
+    return markBorders;
   }
 
   render() {
@@ -170,6 +185,7 @@ class MapContainer extends Component {
             fillColor= "#b6cbdb"
             fillOpacity={0.7} >
           </Polygon>
+          {this.createMarkBorders()}
         </Map>
     );
   }
