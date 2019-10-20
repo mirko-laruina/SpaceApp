@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Map, GoogleApiWrapper, Polygon } from 'google-maps-react';
-import confiniToscana from "./toscanaConfini.json";
+import confiniToscana from "./toscanaConfini2.json";
 
 const mapStyles = {
   width: '100%',
@@ -17,15 +17,15 @@ class MapContainer extends Component {
 
     this.state = {
       costa: [
-          {lat:  43.416667, lng:  11},
-          {lat:  43.416667, lng:  11.5},
-          {lat:  43, lng:  11.5} 
-          ],
+        {lat:  43.416667, lng:  11},
+        {lat:  43.416667, lng:  11.5},
+        {lat:  43, lng:  11.5} 
+        ],
       confini:[
-          {lat:  41, lng:  8},
-          {lat:  45, lng:  8},
-          {lat:  45, lng:  15},
-          {lat:  41, lng:  15},
+        {lat:  50, lng:  0},
+        {lat:  36, lng:  0},
+        {lat:  36, lng:  19},
+        {lat:  50, lng:  19},
         ],
       bordi:[]
       }
@@ -38,15 +38,19 @@ class MapContainer extends Component {
       //this.state.confini.forEach(e => {
       //  this.state.bordi.push(e)
       //});
-      for(let i=0; i<1; i++){
+      for(let i=0; i<4; i++){
         this.state.bordi.push(this.state.confini[i])
       }
-      //this.state.bordi.push(this.state.confini[0]);
-
-      confiniToscana[16].forEach(e => {
-        this.state.bordi.push(e)
-      });
-      this.state.bordi.push(confiniToscana[16][0]);
+      this.state.bordi.push(this.state.confini[0]);
+      
+      for(let j=0; j<17; j++){
+        for(let i=0; i<confiniToscana[j].length; i++){
+          this.state.bordi.push(confiniToscana[j][i])
+        }
+        this.state.bordi.push(confiniToscana[j][0]);
+        this.state.bordi.push(confiniToscana[j][0]);
+        this.state.bordi.push(this.state.confini[0]);
+      }
     }
 
     //Aggiunge un punto all'array costa in modo tale che sia messo tra i 2 punti piu vicini (Prototipo)
@@ -105,8 +109,8 @@ class MapContainer extends Component {
             <Map id="googleMap"
               google={this.props.google}
               onDragend={this.checkArea}
-              zoom={8.5}
-              //minZoom={9}
+              zoom={9}
+              minZoom={8.2}
               maxZoom={14}
               bounds = {this.state.center}
               style={mapStyles}
@@ -114,10 +118,10 @@ class MapContainer extends Component {
               <Polygon
                 paths= {this.state.bordi}//{this.state.costa}
                 strokeColor="#000000"
-                strokeOpacity={1}
+                strokeOpacity={0}
                 strokeWeight={2}
-                fillColor= "#000000"//"#aadaff"
-                fillOpacity={2} >
+                fillColor= "#b6cbdb"//"#aadaff"
+                fillOpacity={0.7} >
               </Polygon>
             </Map>
         );
