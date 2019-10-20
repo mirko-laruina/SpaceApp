@@ -1,7 +1,10 @@
 import React, { Component } from "react";
-import { Map, GoogleApiWrapper, HeatMap } from 'google-maps-react';
+import { Map, GoogleApiWrapper, HeatMap, Polyline } from 'google-maps-react';
 import myData from './altitudine.json';
 import {Button} from 'react-bootstrap'
+import confiniToscana from "./toscanaConfini.json";
+import Cookies from 'universal-cookie'
+const cookies = new Cookies()
 
 const mapStyles = {
   width: '100%',
@@ -14,8 +17,7 @@ class MapContainer extends Component {
 
   constructor(){
     super();
-
-    newData = this.updateData(3)
+    newData = this.updateData(cookies.get('water'))
 
     this.state = {
       gradient: [
@@ -40,6 +42,7 @@ class MapContainer extends Component {
 
   updateData(threshold){
     var newData = myData;
+    console.log("here")
     newData.forEach(element => {
       if(element.height == 0){
         element.weight = 0;
@@ -53,10 +56,13 @@ class MapContainer extends Component {
     return newData
   }
 
-  componentDidMount(){
-    setTimeout(() => {
-      this.updateData(1000);
-    }, 5000);
+  componentDidUpdate(prevPops){
+    if(this.props.water != prevPops.water){
+      console.log(this.updateData(this.props.water))
+      this.setState({
+        data: this.updateData(this.props.water),
+      })
+    }
   }
 
   render() {
@@ -74,6 +80,11 @@ class MapContainer extends Component {
             radius={0.07}
             opacity={0.7}
           >
+          <Polyline path={confiniToscana}
+            options={{ 
+              strokeColor: '#fff',
+              strokeOpacity: 1,
+              strokeWeight: 2,}}/>
           </HeatMap>
         </Map>
     );
