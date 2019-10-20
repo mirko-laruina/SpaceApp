@@ -31,7 +31,6 @@ class MapContainer extends Component {
       }
     }
 
-
     componentDidMount(){
       this.addPoint({lat: 42, lng: 11});
 
@@ -47,7 +46,6 @@ class MapContainer extends Component {
         for(let i=0; i<confiniToscana[j].length; i++){
           this.state.bordi.push(confiniToscana[j][i])
         }
-        this.state.bordi.push(confiniToscana[j][0]);
         this.state.bordi.push(confiniToscana[j][0]);
         this.state.bordi.push(this.state.confini[0]);
       }
