@@ -1,42 +1,30 @@
-import React, {Component} from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./style.css";
-import SideBar from "./sidebar";
+import SideBar from "./sidebar.js";
 import MapContainer from './MapContainer.js';
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
+import Ticker from './ticker.js';
+import { Map, GoogleApiWrapper } from 'google-maps-react';
 
 
-class App extends Component {
-    constructor(){
-        super();
-        this.state = {
-            waterValue: 10,
-        }
-        this.waterHandler = this.waterHandler.bind(this)
-    }
 
-    waterHandler(evt, value){
-        cookies.set('water', value);
-        window.location.reload();
-    }
+function App() {
 
-    render(){
-        return (
-            <>
-            <div id="App">
-                <SideBar handler={this.waterHandler} className="sidebar" pageWrapId={"page-wrap"} outerContainerId={"App"} />
+  return (
+    <div id="App">
+        <SideBar className="sidebar" pageWrapId={"page-wrap"} outerContainerId={"App"} />
 
-            <div id="page-wrap">
-                <MapContainer water={this.state.waterValue}/>
-            </div>
-            </div>
-            </>
-        );
-    }
+        <Ticker className="ticker" pageWrapId={"page-wrap"} outerContainerId={"App"}/>
+
+      <div id="page-wrap">
+        <MapContainer />
+      </div>
+    </div>
+  );
 }
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(<App />, rootElement);
+
 
