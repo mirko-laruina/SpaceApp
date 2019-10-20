@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { Map, GoogleApiWrapper, HeatMap, Polygon } from 'google-maps-react';
 import myData from './altitudine.json';
-import {Button} from 'react-bootstrap'
-import Cookies from 'universal-cookie'
+import Cookies from 'universal-cookie'; 
 import confiniToscana from "./toscanaConfini2.json";
 
 const cookies = new Cookies()
@@ -51,7 +50,7 @@ class MapContainer extends Component {
     var newData = myData;
     console.log("here")
     newData.forEach(element => {
-      if(element.height == 0){
+      if(element.height === 0){
         element.weight = 0;
       } else if(element.height > threshold){
         element.weight = 0;
@@ -66,28 +65,50 @@ class MapContainer extends Component {
 
     checkArea(mapProps, map){
 
-      //console.log(map.center)
-      let strictBounds = new this.props.google.maps.LatLngBounds(
-        new this.props.google.maps.LatLng(42.448592,9.794551), 
-        new this.props.google.maps.LatLng(44.403177 ,12.384934)
-      );
-
-      if (strictBounds.contains(map.getCenter())) return;
-            // We're out of bounds - Move the map back within the bounds
+      console.log(mapProps)
+      /*let strictBounds = mapProps.google.maps.LatLngBounds(
+        mapProps.google.maps.LatLng(42.448592,9.794551), 
+        mapProps.google.maps.LatLng(44.403177 ,12.384934)
+      );*/
+      
+      // We're out of bounds - Move the map back within the bounds
       var c = map.getCenter(),
-      x = c.lng(),
-      y = c.lat(),
-      maxX = strictBounds.getNorthEast().lng(),
-      maxY = strictBounds.getNorthEast().lat(),
-      minX = strictBounds.getSouthWest().lng(),
-      minY = strictBounds.getSouthWest().lat();
+          lng = c.lng(),
+          lat = c.lat(),
+          maxLat = 44.403177,
+          minLat = 42.448592,
+          maxLng = 12.384934,
+          minLng = 9.794551;
 
-      if (x < minX) x = minX;
-      if (x > maxX) x = maxX;
+      /*if (x > minX) x = minX;
+      if (x < maxX) x = maxX;
       if (y < minY) y = minY;
-      if (y > maxY) y = maxY;
+      if (y > maxY) y = maxY;*/
+      console.log("lat:"+lat +" lng:"+lng);
 
-      map.setCenter(new this.props.google.maps.LatLng(y, x));
+      if(lat >= maxLat){
+        console.log("lat: "+lat + " > " + maxLat);
+        lat=maxLat;
+      }else{
+        if(lat < minLat){
+          lat = minLat;
+          console.log("lat: "+lat + " < " + minLat);
+        }
+      }
+
+      if(lng >= maxLng){
+        console.log("lng: "+lng + " > " + maxLng);
+        lng=maxLng;
+      }else{
+        if(lng < minLng){
+          console.log("lng: "+lng + " < " + minLng);
+          lng = minLng;
+        }
+      }
+
+      console.log("lat:"+lat +" lng:"+lng);
+
+      map.setCenter({lat: lat, lng: lng});
     }
 
 
@@ -113,7 +134,12 @@ class MapContainer extends Component {
       this.state.bordi.push(confiniToscana[j][0]);
       this.state.bordi.push(confiniToscana[j][0]);
       this.state.bordi.push(this.state.confini[0]);
+
     }
+    
+    setTimeout(()=>{
+      cookies.set("water", 10); console.log("adlknlanfa");
+    }, 100)
   }
 
   render() {
@@ -121,6 +147,10 @@ class MapContainer extends Component {
         <Map id="googleMap"
           google={this.props.google}
           zoom={8}
+          minZoom = {8.3}
+          maxZoom = {12}
+          onDragend = {this.checkArea}
+          //bounds = {{lat:42.448592, lng:9.794551},{lat:44.403177 ,lng:12.384934}}
           style={mapStyles}
           initialCenter={{ lat: 43.416667, lng: 11}}>
           <HeatMap
