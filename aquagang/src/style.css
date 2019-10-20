@@ -82,3 +82,15 @@ body {
 .bm-overlay {
   background: rgba(0, 0, 0, 0.3);
 }
+
+.slider {
+  color: black;
+  margin-bottom: 15px;
+  margin-top: 50px;
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  border: none;
+}
