@@ -10,19 +10,13 @@ with open('pop.csv') as csv_file:
 output = []
 lat = 0
 lng = 0
-
-for i in range(9*5, 12*5):
-    for j in range(42*10, 44*10):
-
-for  row in data :
-    for elem in row :
+for j in range(9*5, 12*5):
+    for i in range(42*10, 44*10):
+        print(j, i, data[i][j])
         output.append({
-            "lat": lat,
-            "lng": lng,
-            "pop": elem
+            "lat": j/10,
+            "lng": i/5,
+            "pop": data[i][j]
         })
-        lat += 0.1
-    lng += 0.2
-    lat = 0
 
 print(output)

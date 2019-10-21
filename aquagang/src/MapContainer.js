@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import { Map, GoogleApiWrapper, HeatMap, Polygon, Polyline } from 'google-maps-react';
-import myData from './altitudine.json';
-import Cookies from 'universal-cookie'; 
+import origWaterData from './altitudine.json';
+import originPopData from './punti.json';
+import {Button} from 'react-bootstrap'
+import Cookies from 'universal-cookie'
 import confiniToscana from "./toscanaConfini.json";
+
 
 const cookies = new Cookies()
 
@@ -11,13 +14,19 @@ const mapStyles = {
   height: '100%',
 };
 
-var newData
+var newWaterData
+var newPopData
 
 class MapContainer extends Component {
 
   constructor(){
     super();
-    newData = this.updateData(cookies.get('water'))
+
+    if(!cookies.get('water')){
+      cookies.set('water', 0)
+    }
+    newWaterData = this.updateData(cookies.get('water'))
+    newPopData = this.getPopData()
 
     this.state = {
       gradient: [
@@ -25,15 +34,17 @@ class MapContainer extends Component {
         'rgba(170, 218, 255, 0)',
         'rgba(170, 218, 255, 0)',
         'rgba(170, 218, 255, 0)',
-        'rgba(170, 218, 255, 0)',
-        'rgba(170, 218, 255, 1)',
-        'rgba(170, 218, 255, 1)',
+        'rgba(170, 218, 255, 0.2)',
+        'rgba(170, 218, 255, 0.4)',
+        'rgba(170, 218, 255, 0.8)',
         'rgba(170, 218, 255, 1)',
         'rgba(170, 218, 255, 1)',
         'rgba(170, 218, 255, 1)',
         'rgba(170, 218, 255, 1)',
       ],
-      data: newData,
+      waterData: newWaterData,
+      popData: newPopData,
+      treshold: 1,
       bordi: [],
       confini:[
         {lat:  50, lng:  0},
@@ -47,10 +58,9 @@ class MapContainer extends Component {
   }
 
   updateData(threshold){
-    var newData = myData;
-    console.log("here")
-    newData.forEach(element => {
-      if(element.height === 0){
+    var newWaterData = origWaterData;
+    newWaterData.forEach(element => {
+      if(element.height == 0){
         element.weight = 0;
       } else if(element.height > threshold){
         element.weight = 0;
@@ -59,9 +69,16 @@ class MapContainer extends Component {
       }
     });
 
-    return newData
+    return newWaterData
   }
 
+  getPopData(){
+    var newPopData = originPopData;
+    newPopData.forEach(element => {
+      element.weight = element.pop;
+    })
+    return newPopData
+  }
 
     checkArea(mapProps, map){
 
@@ -94,7 +111,6 @@ class MapContainer extends Component {
           lat = minLat;
           console.log("lat: "+lat + " < " + minLat);
         }
-      }
 
       if(lng >= maxLng){
         console.log("lng: "+lng + " > " + maxLng);
@@ -110,13 +126,18 @@ class MapContainer extends Component {
 
       map.setCenter({lat: lat, lng: lng});
     }
+  }
 
 
   componentDidUpdate(prevPops){
-    if(this.props.water != prevPops.water){
-      console.log(this.updateData(this.props.water))
+    if(this.props.showPop != prevPops.showPop){
       this.setState({
-        data: this.updateData(this.props.water),
+        showPop: !this.state.showPop,
+      })
+    }
+    if(this.props.meters != prevPops.meters){
+      this.setState({
+        waterData: this.updateData(this.props.meters),
       })
     }
   }
@@ -135,11 +156,7 @@ class MapContainer extends Component {
       this.state.bordi.push(confiniToscana[j][0]);
       this.state.bordi.push(this.state.confini[0]);
 
-    }
-    
-    setTimeout(()=>{
-      cookies.set("water", 1); console.log("adlknlanfa");
-    }, 100)
+    } 
   }
 
   createMarkBorders = () => {
@@ -161,15 +178,29 @@ class MapContainer extends Component {
     return (
         <Map id="googleMap"
           google={this.props.google}
+          streetViewControl={false}
+          scaleControl={false}
+          fullscreenControl={false}
           zoom={8}
           minZoom = {8.3}
           maxZoom = {12}
           onDragend = {this.checkArea}
           //bounds = {{lat:42.448592, lng:9.794551},{lat:44.403177 ,lng:12.384934}}
           style={mapStyles}
-          initialCenter={{ lat: 43.416667, lng: 11}}>
+          initialCenter={{ lat: 43.416667, lng: 11}}
+          >
+          { this.props.showPop &&
+            <HeatMap
+              positions ={this.state.popData}
+              opacity={0.3}
+              dissipating={false}
+              radius={0.05}
+              maxIntensity={400}
+            >
+            </HeatMap>
+          }
           <HeatMap
-            positions ={this.state.data}
+            positions ={this.state.waterData}
             gradient={this.state.gradient}
             opacity={1}
             dissipating={false}
@@ -183,7 +214,7 @@ class MapContainer extends Component {
             strokeOpacity={0}
             strokeWeight={2}
             fillColor= "#b6cbdb"
-            fillOpacity={0.7} >
+            fillOpacity={0.85} >
           </Polygon>
           {this.createMarkBorders()}
         </Map>
